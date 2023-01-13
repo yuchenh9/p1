@@ -1,5 +1,6 @@
 # Node.js Rest APIs with Express & MySQL example
-
+make sure use npm config set legacy-peer-deps true
+and then npm install
 For instruction, please visit:
 > [Build Node.js Rest APIs with Express & MySQL](https://www.bezkoder.com/node-js-rest-api-express-mysql/)
 
