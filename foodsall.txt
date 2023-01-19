@@ -1,0 +1,23 @@
+[{"FoodGroupID":1,"FoodGroupCode":1,"FoodGroupName":"Dairy and Egg Products"}
+,{"FoodGroupID":2,"FoodGroupCode":2,"FoodGroupName":"Spices and Herbs"}
+,{"FoodGroupID":3,"FoodGroupCode":3,"FoodGroupName":"Babyfoods"}
+,{"FoodGroupID":4,"FoodGroupCode":4,"FoodGroupName":"Fats and Oils"}
+,{"FoodGroupID":5,"FoodGroupCode":5,"FoodGroupName":"Poultry Products"}
+,{"FoodGroupID":6,"FoodGroupCode":6,"FoodGroupName":"Soups, Sauces and Gravies"}
+,{"FoodGroupID":7,"FoodGroupCode":7,"FoodGroupName":"Sausages and Luncheon meats"}
+,{"FoodGroupID":8,"FoodGroupCode":8,"FoodGroupName":"Breakfast cereals"}
+,{"FoodGroupID":9,"FoodGroupCode":9,"FoodGroupName":"Fruits and fruit juices"}
+,{"FoodGroupID":10,"FoodGroupCode":10,"FoodGroupName":"Pork Products"}
+,{"FoodGroupID":11,"FoodGroupCode":11,"FoodGroupName":"Vegetables and Vegetable Products"}
+,{"FoodGroupID":12,"FoodGroupCode":12,"FoodGroupName":"Nuts and Seeds"}
+,{"FoodGroupID":13,"FoodGroupCode":13,"FoodGroupName":"Beef Products"}
+,{"FoodGroupID":14,"FoodGroupCode":14,"FoodGroupName":"Beverages"}
+,{"FoodGroupID":15,"FoodGroupCode":15,"FoodGroupName":"Finfish and Shellfish Products"}
+,{"FoodGroupID":16,"FoodGroupCode":16,"FoodGroupName":"Legumes and Legume Products"}
+,{"FoodGroupID":17,"FoodGroupCode":17,"FoodGroupName":"Lamb, Veal and Game"}
+,{"FoodGroupID":18,"FoodGroupCode":18,"FoodGroupName":"Baked Products"}
+,{"FoodGroupID":19,"FoodGroupCode":19,"FoodGroupName":"Sweets"}
+,{"FoodGroupID":20,"FoodGroupCode":20,"FoodGroupName":"Cereals, Grains and Pasta"}
+,{"FoodGroupID":21,"FoodGroupCode":21,"FoodGroupName":"Fast Foods"}
+,{"FoodGroupID":22,"FoodGroupCode":22,"FoodGroupName":"Mixed Dishes"}
+,{"FoodGroupID":25,"FoodGroupCode":25,"FoodGroupName":"Snacks"}]

@@ -1,0 +1,48 @@
+tabletype->feilds->rows
+
+/showtablecolumns/?table=
+feildObj[]
+[{"Field":"FoodID","Type":"int","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},
+{"Field":"FoodCode","Type":"int","Null":"NO","Key":"","Default":null,"Extra":""},
+{"Field":"FoodGroupID","Type":"int","Null":"NO","Key":"","Default":null,"Extra":""},
+{"Field":"FoodSourceID","Type":"int","Null":"NO","Key":"","Default":null,"Extra":""},
+{"Field":"FoodDescription","Type":"varchar(255)","Null":"NO","Key":"","Default":null,"Extra":""}]
+
+/showtablecolumns/?table=foodgroup
+[{"Field":"FoodGroupID","Type":"int","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"},
+{"Field":"FoodGroupCode","Type":"int","Null":"NO","Key":"","Default":null,"Extra":""},
+{"Field":"FoodGroupName","Type":"varchar(255)","Null":"NO","Key":"","Default":null,"Extra":""}]
+
+/tabledata/?table=foodname&condition=
+[{"FoodID":2,"FoodCode":2,"FoodGroupID":22,"FoodSourceID":20,"FoodDescription":"Cheese souffle"},
+{"FoodID":4,"FoodCode":4,"FoodGroupID":22,"FoodSourceID":20,"FoodDescription":"Chop suey, with meat, canned"},
+{"FoodID":5,"FoodCode":5,"FoodGroupID":22,"FoodSourceID":0,"FoodDescription":"Chinese dish, chow mein, chicken"},
+{"FoodID":6,"FoodCode":6,"FoodGroupID":18,"FoodSourceID":20,"FoodDescription":"Corn fritter"},{"FoodID":7,"FoodCode":7,"FoodGroupID":22,"FoodSourceID":36,"FoodDescription":"Beef pot roast, with browned potatoes, peas and corn"},{"FoodID":8,"FoodCode":8,"FoodGroupID":22,"FoodSourceID":30,"FoodDescription":"Fried chicken, mashed potatoes and vegetables"},{"FoodID":9,"FoodCode":9,"FoodGroupID":22,"FoodSourceID":30,"FoodDescription":"Meat loaf with tomato sauce, mashed potatoes and peas"},{"FoodID":10,"FoodCode":10,"FoodGroupID":22,"FoodSourceID":30,"FoodDescription":"Sliced turkey with mashed potatoes and peas"},{"FoodID":13,"FoodCode":13,"FoodGroupID":2,"FoodSourceID":20,"FoodDescription":"Vinegar, cider"},{"FoodID":14,"FoodCode":14,"FoodGroupID":2,"FoodSourceID":0,"FoodDescription":"Vinegar, distilled (white)"},{"FoodID":16,"FoodCode":16,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Butter, whipped"},{"FoodID":17,"FoodCode":17,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Butter oil, anhydrous"},{"FoodID":18,"FoodCode":18,"FoodGroupID":1,"FoodSourceID":3,"FoodDescription":"Cheese, blue"},{"FoodID":19,"FoodCode":19,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Cheese, brick"},{"FoodID":20,"FoodCode":20,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Cheese, brie"},{"FoodID":21,"FoodCode":21,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Cheese, camembert"},{"FoodID":22,"FoodCode":22,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Cheese, caraway"},{"FoodID":23,"FoodCode":23,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Cheese, cheshire"},{"FoodID":24,"FoodCode":24,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Cheese, colby"},{"FoodID":25,"FoodCode":25,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Cheese, cottage, creamed (4.5% M.F.)"},{"FoodID":26,"FoodCode":26,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Cheese, cottage, creamed with fruit"},{"FoodID":27,"FoodCode":27,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Cheese, cottage, uncreamed, dry curd (0.4% M.F.)"},{"FoodID":28,"FoodCode":28,"FoodGroupID":1,"FoodSourceID":3,"FoodDescription":"Cheese, cream"},{"FoodID":29,"FoodCode":29,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Cheese, edam"},{"FoodID":30,"FoodCode":30,"FoodGroupID":1,"FoodSourceID":0,"FoodDescription":"Cheese, fontina"},
+
+
+
+/tabledata/?table=foodgroup&condition=
+[{"FoodGroupID":1,"FoodGroupCode":1,"FoodGroupName":"Dairy and Egg Products"},{"FoodGroupID":2,"FoodGroupCode":2,"FoodGroupName":"Spices and Herbs"},
+{"FoodGroupID":3,"FoodGroupCode":3,"FoodGroupName":"Babyfoods"},{"FoodGroupID":4,"FoodGroupCode":4,"FoodGroupName":"Fats and Oils"},
+{"FoodGroupID":5,"FoodGroupCode":5,"FoodGroupName":"Poultry Products"},{"FoodGroupID":6,"FoodGroupCode":6,"FoodGroupName":"Soups, Sauces and Gravies"},
+{"FoodGroupID":7,"FoodGroupCode":7,"FoodGroupName":"Sausages and Luncheon meats"},{"FoodGroupID":8,"FoodGroupCode":8,"FoodGroupName":"Breakfast cereals"},
+{"FoodGroupID":9,"FoodGroupCode":9,"FoodGroupName":"Fruits and fruit juices"},{"FoodGroupID":10,"FoodGroupCode":10,"FoodGroupName":"Pork Products"},
+{"FoodGroupID":11,"FoodGroupCode":11,"FoodGroupName":"Vegetables and Vegetable Products"},{"FoodGroupID":12,"FoodGroupCode":12,"FoodGroupName":"Nuts and Seeds"},
+{"FoodGroupID":13,"FoodGroupCode":13,"FoodGroupName":"Beef Products"},{"FoodGroupID":14,"FoodGroupCode":14,"FoodGroupName":"Beverages"},
+{"FoodGroupID":15,"FoodGroupCode":15,"FoodGroupName":"Finfish and Shellfish Products"},{"FoodGroupID":16,"FoodGroupCode":16,"FoodGroupName":"Legumes and Legume Products"},
+{"FoodGroupID":17,"FoodGroupCode":17,"FoodGroupName":"Lamb, Veal and Game"},{"FoodGroupID":18,"FoodGroupCode":18,"FoodGroupName":"Baked Products"},
+{"FoodGroupID":19,"FoodGroupCode":19,"FoodGroupName":"Sweets"},{"FoodGroupID":20,"FoodGroupCode":20,"FoodGroupName":"Cereals, Grains and Pasta"},
+{"FoodGroupID":21,"FoodGroupCode":21,"FoodGroupName":"Fast Foods"},{"FoodGroupID":22,"FoodGroupCode":22,"FoodGroupName":"Mixed Dishes"},
+{"FoodGroupID":25,"FoodGroupCode":25,"FoodGroupName":"Snacks"}]
+
+
+
+/tabledata/?table=nutrientamount&condition=
+[{"ID":2,"FoodID":2,"NutrientID":205,"NutrientValue":5.91,"NutrientSourceID":102,"NutrientDateOfEntry":"2010-04-16T05:00:00.000Z"},
+{"ID":3,"FoodID":2,"NutrientID":207,"NutrientValue":1.67,"NutrientSourceID":102,"NutrientDateOfEntry":"2010-04-16T05:00:00.000Z"},
+{"ID":4,"FoodID":2,"NutrientID":208,"NutrientValue":204,"NutrientSourceID":102,"NutrientDateOfEntry":"2010-04-16T05:00:00.000Z"},
+{"ID":5,"FoodID":2,"NutrientID":221,"NutrientValue":0,"NutrientSourceID":12,"NutrientDateOfEntry":"2004-09-13T05:00:00.000Z"},
+{"ID":6,"FoodID":2,"NutrientID":255,"NutrientValue":67.17,"NutrientSourceID":102,"NutrientDateOfEntry":"2010-04-16T05:00:00.000Z"},
+{"ID":7,"FoodID":2,"NutrientID":262,"NutrientValue":0,"NutrientSourceID":12,"NutrientDateOfEntry":"2004-09-13T05:00:00.000Z"},
+{"ID":8,"FoodID":2,"NutrientID":263,"NutrientValue":0,"NutrientSourceID":12,"NutrientDateOfEntry":"2004-09-13T05:00:00.000Z"},
+{"ID":9,"FoodID":2,"NutrientID":268,"NutrientValue":853,"NutrientSourceID":4,"NutrientDateOfEntry":"2010-04-16T05:00:00.000Z"},
