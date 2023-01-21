@@ -24,7 +24,6 @@ export function DataCell(props){
 const data=props.data;
 const feilds=props.feilds;
 const onMyCellClicked=props.onMyCellClicked;
-console.log("render");
 const cells= data.map((i) =>
   <Grid   container
   item 
