@@ -23,11 +23,30 @@ var connection = mysql.createPool({
 console.log(connection);
 // simple route
 //app.use(express.static('public')); /* this line tells Express to use the public folder as our static folder from which we can serve static files*/
-app.use(express.static(path.join(__dirname, './app2/build')));
-app.use(express.static(path.join(__dirname, './public')));
+app.use(express.static(path.join(__dirname, './app2/build')));//static path
+//app.use(express.static(path.join(__dirname, './Build-Unity')));//static path
 app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
+/*
+const mypath='./log_box_test_app/build'
+app.use(express.static(path.join(__dirname, mypath)));//static path
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, mypath, 'index.html'));
+});
+app.get('/Build-Unity.loader.js', function (req, res) {
+    res.sendFile(path.join(__dirname, mypath, 'Build/Build-Unity.loader.js'));
+});
+app.get('/Build-Unity.data', function (req, res) {
+    res.sendFile(path.join(__dirname, mypath, 'Build/Build-Unity.data'));
+});
+app.get('/Build-Unity.framework.js', function (req, res) {
+    res.sendFile(path.join(__dirname, mypath, 'Build/Build-Unity.framework.js'));
+});
+app.get('/Build-Unity.wasm', function (req, res) {
+    res.sendFile(path.join(__dirname, mypath, 'Build/Build-Unity.wasm'));
+});
+*/
 //WHERE FoodDescription LIKE '%tomato%'
 app.get('/tabledata/', function (req, res) {
     const decodedcondition=(req.query.condition).toString().replaceAll('%20',' ').replaceAll('%27','"');

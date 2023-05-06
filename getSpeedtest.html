@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Speed Calculator</title>
+    <script>
+      function getSpeed(time, latitude, longitude, prev_time, prev_lat, prev_lng) {
+        // Convert the time strings to Date objects
+        const currTime = new Date(time);
+        const prevTime = new Date(prev_time);
+
+        // Calculate the time difference in seconds
+        const timeDiff = (currTime - prevTime) / 1000;
+
+        // Calculate the distance between the two locations using the Haversine formula
+        const R = 6371; // Radius of the earth in km
+        const dLat = deg2rad(latitude - prev_lat);
+        const dLng = deg2rad(longitude - prev_lng);
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(deg2rad(prev_lat)) *
+            Math.cos(deg2rad(latitude)) *
+            Math.sin(dLng / 2) *
+            Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c;
+
+        // Calculate the speed in km/h
+        const speed = distance / timeDiff * 3600;
+
+        // Round the speed to two decimal places and return it
+        return Math.round(speed * 100) / 100;
+      }
+
+      // Helper function to convert degrees to radians
+      function deg2rad(degrees) {
+        return degrees * (Math.PI/180);
+      }
+
+      function calculateSpeed() {
+        // Get the input values
+        const time = document.getElementById("time").value;
+        const latitude = parseFloat(document.getElementById("latitude").value);
+        const longitude = parseFloat(document.getElementById("longitude").value);
+        const prevTime = document.getElementById("prev-time").value;
+        const prevLatitude = parseFloat(document.getElementById("prev-latitude").value);
+        const prevLongitude = parseFloat(document.getElementById("prev-longitude").value);
+
+        // Calculate the speed
+        const speed = getSpeed(time, latitude, longitude, prevTime, prevLatitude, prevLongitude);
+
+        // Display the result
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = `Speed: ${speed} km/h`;
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Speed Calculator</h1>
+    <label for="time">Time:</label>
+    <input type="text" id="time" value="2023-04-02 12:00:00"><br>
+    <label for="latitude">Latitude:</label>
+    <input type="text" id="latitude" value="37.7749"><br>
+    <label for="longitude">Longitude:</label>
+    <input type="text" id="longitude" value="-122.4194"><br>
+    <label for="prev-time">Previous Time:</label>
+    <input type="text" id="prev-time" value="2023-04-02 11:30:00"><br>
+    <label for="prev-latitude">Previous Latitude:</label>
+    <input type="text" id="prev-latitude" value="37.7833"><br>
+    <label for="prev-longitude">Previous Longitude:</label>
+    <input type="text" id="prev-longitude" value="-122.4167"><br>
+    <button onclick="calculateSpeed()">Calculate Speed</button>
+    <div id="result"></div>

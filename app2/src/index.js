@@ -13,6 +13,9 @@ import { useState, useEffect } from 'react';
 import { Grid } from '@mui/material';
 import { FeildCells } from './datarow';
 import { DataCell } from './datarow';
+
+import { Unity, useUnityContext } from "react-unity-webgl";
+import UnityComponent from './UnityComponent';
 function App() {
   const [tabledata, setTabledata] = useState([]);
   const [tables, setTables] = useState([]);
@@ -27,6 +30,15 @@ function App() {
   const [cellClick, setCellClick]=useState({cell:{},feildName:""});
   const [page,setPage]=useState(0)
 //fetchtable when 1.need a new table 2. move page of the same table 3. search
+/*
+var loaderUrl = buildUrl + "Build/Build-Unity.loader.js";
+      var config = {
+        dataUrl: buildUrl + "Build/Build-Unity.data",
+        frameworkUrl: buildUrl + "Build/Build-Unity.framework.js",
+        codeUrl: buildUrl + "Build/Build-Unity.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+*/
+
   function fetchTable(inputtable,inputconition,inputpage){
     console.log("fetchtable")
     fetch(`/showtablecolumns/?table=${inputtable}`)
@@ -111,8 +123,10 @@ function App() {
     if(page==0){//solved bug
       fetchTable(table,conditionQuery,page);//
     }else {setPage(0);}//
+    setConditionList([])
+    setConditionQuery(conditionvalue);
+    setConValue('');
   },[table])
-  //change table means change page tabledata
 
   useEffect(()=>{
     if(table=="foodname" && (cellClick.feildName=="FoodDescription"||cellClick.feildName=="FoodID")) {
@@ -161,7 +175,9 @@ useEffect(()=>{
   }
 
   const onCellClicked = (input) => {
+    setConditionQuery('');
     setCellClick(input);
+
   }
 
 
@@ -193,6 +209,7 @@ useEffect(()=>{
 const onRemove=(id)=>{
   setConditionList((current)=>current.filter((i)=>
     i.id!==id))
+    
 }
 
 
@@ -232,7 +249,9 @@ const onRemove=(id)=>{
   return (
     <div className="App">
       
+      <UnityComponent/>
       <div style={{display:"flex"}}>
+        <br></br>
       <form>
           <label>
             <input type="text" style={{justifyContent: "left",float:"left"}} value ={conditionvalue} onChange={conditionvalueChange} />

@@ -1,0 +1,345 @@
+"C:\Users\yuche\Downloads\joined.csv"
+mysql -h localhost -u root -p
+CREATE TABLE discounts (
+    id INT NOT NULL AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    expired_date DATE NOT NULL,
+    amount DECIMAL(10 , 2 ) NULL,
+    PRIMARY KEY (id)
+);
+
+LOAD DATA INFILE 'c:/tmp/discounts.csv' 
+INTO TABLE discounts 
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+
+
+CREATE TABLE joined (
+    id INT NOT NULL,
+    FoodID INT NOT NULL,
+    NutrientID INT NOT NULL,
+    NutrientValue FLOAT NOT NULL,
+    NutrientCode INT NOT NULL,
+    NutrientSymbol VARCHAR(255) NOT NULL,
+    NutrientUnit VARCHAR(255) NOT NULL,
+    NutrientName VARCHAR(255) NOT NULL,
+    Tagname VARCHAR(255) NOT NULL,
+    need FLOAT NOT NULL,
+    NutrientGroup INT NOT NULL,
+    dv FLOAT NOT NULL,
+    PRIMARY KEY (id)
+);
+
+LOAD DATA INFILE "C:\joined.csv"
+INTO TABLE joined 
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+  
+    CREATE TABLE locations (
+        id INT NOT NULL AUTO_INCREMENT,
+        timestamp DATETIME NOT NULL,
+        endpoint VARCHAR(255) NOT NULL,
+        lat FLOAT(10,6) NOT NULL,
+        lng FLOAT(10,6) NOT NULL,
+        PRIMARY KEY (id)
+    );  
+    CREATE TABLE activeusers (
+        id INT NOT NULL AUTO_INCREMENT,
+        timestamp DATETIME NOT NULL,
+        endpoint VARCHAR(255) NOT NULL,
+        active INT NOT NULL,
+        PRIMARY KEY (id)
+    );
+    CREATE TABLE users (
+        id INT NOT NULL AUTO_INCREMENT,
+        userID VARCHAR(255) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        key VARCHAR(255) NOT NULL,
+        endpoint VARCHAR(255) NOT NULL,
+        PRIMARY KEY (id)
+    );
+
+    every session has a life of 5 minutes, in a session, the web sends an update life every minutes
+    in the server, something minus all the live session's lives constantly 
+    user(unregistered):                 ->start( ),->                                   endpoint,key                    endpoint(key)
+    user(registered):endpoint(live),key ->start(id), ->"endpoint is live"               not update                      endpoint(key)
+    user(registered):endpoint(dead),key ->start(id), ->"endpoint is dead, new endpoint" endpoint,key                    endpoint(key)
+
+*only id register
+user(unregistered): ->start( )  
+user(registered):id ->start(id)
+
+
+    web html->start_, ->endpoint
+    (later)if wrong sessionkey sent to endpoint, blackmail the ip
+
+    new user register
+    client:ip->start_()->_users:userID;sessionkey;endpoint, userID;sessionkey;endpoint->client, 
+
+    user establish connection
+    client:ip;userID;endpoint;sessionkey;data->endpoint_(sessionkey;data)
+
+    old user register:
+
+    client:ip;userID;endpoint;sessionkey->start_(userID)->newsession_(_users(userID;time):lcoation,time;location;time)
+
+    feed trips by zone:
+    client:zone->_tripsAndZones:sessions(zone)->_points:points(session)
+
+*feed points by latlng bound:
+client:latlng->endpoint_:points(bound(latlng))->client
+
+    feed trips by latlng bound:
+        client:latlng->endpoint_:tripsAndZones(bound(end or start latlng))->points(sessionID)->client
+
+
+
+    load into the same session if less than five minutes or blue for less than 5 points
+    load into a 
+*CREATE TABLE points (
+    id INT NOT NULL AUTO_INCREMENT,
+    speed FLOAT(10,6) NOT NULL,
+    timestamp DATETIME NOT NULL,
+    userID VARCHAR(255) NOT NULL,
+    lat FLOAT(10,6) NOT NULL,
+    lng FLOAT(10,6) NOT NULL,
+    PRIMARY KEY (id)
+);  
+    CREATE TABLE tripsAndZones (
+        id INT NOT NULL AUTO_INCREMENT,
+        timestamp DATETIME NOT NULL,
+        zone VARCHAR(255) NOT NULL,
+        userID INT NOT NULL,
+        start_lat FLOAT(10,6) NOT NULL,
+        start_lng FLOAT(10,6) NOT NULL,
+        end_lat FLOAT(10,6) NOT NULL,
+        end_lng FLOAT(10,6) NOT NULL,
+        PRIMARY KEY (id)
+    );
+
+INSERT INTO locations (timestamp, endpoint, lat, lng) VALUES 
+('2023-03-25 14:30:00', 'fPMvFS-vB89HaFy0Ax3e9',  51.505, -0.09),
+('2023-03-25 15:15:00', 'fPMvFS-vB89HaFy0Ax3e9', 51.507, -0.08),
+('2023-03-25 16:00:00', 'fPMvFS-vB89HaFy0Ax3e9', 51.508, -0.06),
+('2023-03-25 16:45:00', 'fPMvFS-vB89HaFy0Ax3e9', 51.51, -0.047),
+('2023-03-25 17:30:00', 'fPMvFS-vB89HaFy0Ax3e9', 51.511, -0.055);
+
+DELETE FROM locations
+WHERE id < 6;
+
+
+
+
+===============================================
+SET @last_timestamp = NOW() - INTERVAL 5000 SECOND;
+SET @last_userID = NULL;
+SET @last_lat = NULL;
+SET @last_lng = NULL;
+
+INSERT IGNORE INTO points (speed, timestamp, userID, lat, lng)
+SELECT 
+    ROUND(RAND()*50 + 50, 6) AS speed,
+    (@last_timestamp := @last_timestamp + INTERVAL (40 + RAND()*12) SECOND) AS timestamp,
+    @last_userID := IF(@last_userID IS NULL, SUBSTR(REPLACE(UUID(), '-', ''), 1, 21), @last_userID) AS userID,
+    ROUND(@last_lat + (RAND()*0.008 - 0.004), 6) AS lat,
+    ROUND(@last_lng + (RAND()*0.008 - 0.004), 6) AS lng
+FROM
+    (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) AS seq
+WHERE
+    SQRT(POW(111.12 * (ROUND(@last_lat + (RAND()*0.008 - 0.004), 6) - @last_lat), 2) + POW(111.12 * COS((@last_lat + ROUND(@last_lat + (RAND()*0.008 - 0.004), 6))/2) * (ROUND(@last_lng + (RAND()*0.008 - 0.004), 6) - @last_lng), 2)) BETWEEN 0.16 AND 0.52
+    AND (@last_lat := ROUND(@last_lat + (RAND()*0.008 - 0.004), 6)) IS NOT NULL
+    AND (@last_lng := ROUND(@last_lng + (RAND()*0.008 - 0.004), 6)) IS NOT NULL
+    AND (@last_timestamp IS NOT NULL)
+    AND (SELECT COUNT(*) FROM (SELECT DISTINCT userID FROM points) AS users) < 5
+LIMIT 100;
+
+===============================================
+INSERT INTO points (id,speed, timestamp, userID, lat, lng) VALUES
+(1 ,63.784665,'2023-04-01 09:56:35','Jgj2XnlD6yJgn6ExaL6vt',37.775231,-122.419238),
+(2 ,87.063846,'2023-04-01 09:57:16','kW8JBVrfR1ZBaSQMB5z5N',37.774908,-122.419774),
+(3 ,92.710321,'2023-04-01 09:57:57','YrjV6otcRJoxuG7xsFUdP',37.774444,-122.419699),
+(4 ,84.575848,'2023-04-01 09:58:38','QyW8RvzG9fP5nM7tJwZ8o',37.774428,-122.418867),
+(5 ,74.335643,'2023-04-01 09:59:19','zgyi4FMTgWkxNRm1H67vu',37.774898,-122.418952),
+(6 ,61.645802,'2023-04-01 09:59:59','Jgj2XnlD6yJgn6ExaL6vt',37.775200,-122.419111),
+(7 ,75.781355,'2023-04-01 10:00:40','kW8JBVrfR1ZBaSQMB5z5N',37.774660,-122.420220),
+(8 ,66.106348,'2023-04-01 10:01:21','YrjV6otcRJoxuG7xsFUdP',37.774196,-122.420062),
+(9 ,87.989949,'2023-04-01 10:02:02','QyW8RvzG9fP5nM7tJwZ8o',37.774187,-122.419219),
+(10,62.037449,'2023-04-01 10:02:43','zgyi4FMTgWkxNRm1H67vu',37.774643,-122.419304),
+(11,70.162432,'2023-04-01 10:03:24','Jgj2XnlD6yJgn6ExaL6vt',37.775072,-122.419465),
+(12,82.790942,'2023-04-01 10:04:05','kW8JBVrfR1ZBaSQMB5z5N',37.774532,-122.420574),
+(13,56.316989,'2023-04-01 10:04:46','YrjV6otcRJoxuG7xsFUdP',37.774069,-122.420416),
+(14,56.787949,'2023-04-01 10:05:27','YrjV6otcRJoxuG7xsFUdP',37.774077,-122.419573),
+(15,61.020618,'2023-04-01 10:06:08','QyW8RvzG9fP5nM7tJwZ8o',37.774537,-122.419658),
+(16,59.497164,'2023-04-01 10:06:49','zgyi4FMTgWkxNRm1H67vu',37.774975,-122.419823),
+(17,82.333222,'2023-04-01 10:07:30','Jgj2XnlD6yJgn6ExaL6vt',37.775404,-122.419984),
+(18,52.918849,'2023-04-01 10:08:11','kW8JBVrfR1ZBaSQMB5z5N',37.774864,-122.421093),
+(19,73.102388,'2023-04-01 10:08:52','YrjV6otcRJoxuG7xsFUdP',37.774401,-122.420935),
+(20,92.450120,'2023-04-01 10:09:33','QyW8RvzG9fP5nM7tJwZ8o',37.774393,-122.420092),
+(21,88.291793,'2023-04-01 10:10:14','zgyi4FMTgWkxNRm1H67vu',37.774848,-122.420177),
+(22,78.794772,'2023-04-01 10:10:55','Jgj2XnlD6yJgn6ExaL6vt',37.775277,-122.420338),
+(23,62.818689,'2023-04-01 10:11:36','kW8JBVrfR1ZBaSQMB5z5N',37.774737,-122.421447),
+(24,55.701573,'2023-04-01 10:12:17','YrjV6otcRJoxuG7xsFUdP',37.774274,-122.421290),
+(25,74.318733,'2023-04-01 10:12:58','QyW8RvzG9fP5nM7tJwZ8o',37.774266,-122.420447),
+(26,76.328548,'2023-04-01 10:13:39','zgyi4FMTgWkxNRm1H67vu',37.774711,-122.420532),
+(27,60.034104,'2023-04-01 10:14:20','Jgj2XnlD6yJgn6ExaL6vt',37.775140,-122.420691),
+(28,58.881662,'2023-04-01 10:15:01','kW8JBVrfR1ZBaSQMB5z5N',37.774599,-122.421800),
+(29,84.244991,'2023-04-01 10:15:42','YrjV6otcRJoxuG7xsFUdP',37.774136,-122.421642),
+(30,83.672010,'2023-04-01 10:16:23','QyW8RvzG9fP5nM7tJwZ8o',37.774128,-122.420799),
+(31,60.880768,'2023-04-01 10:17:04','zgyi4FMTgWkxNRm1H67vu',37.774573,-122.420884),
+(32,73.282828,'2023-04-01 10:17:45','Jgj2XnlD6yJgn6ExaL6vt',37.775002,-122.421045),
+(33,62.758684,'2023-04-01 10:18:26','kW8JBVrfR1ZBaSQMB5z5N',37.774461,-122.422154),
+(34,56.179520,'2023-04-01 10:19:07','YrjV6otcRJoxuG7xsFUdP',37.773998,-122.421997),
+(35,93.109078,'2023-04-01 10:19:48','QyW8RvzG9fP5nM7tJwZ8o',37.773990,-122.421154),
+(36,91.563020,'2023-04-01 10:20:29','zgyi4FMTgWkxNRm1H67vu',37.774435,-122.421239),
+(37,78.372319,'2023-04-01 10:21:10','Jgj2XnlD6yJgn6ExaL6vt',37.774864,-122.421400),
+(38,67.277886,'2023-04-01 10:21:51','kW8JBVrfR1ZBaSQMB5z5N',37.774323,-122.422509),
+(39,92.886910,'2023-04-01 10:22:32','YrjV6otcRJoxuG7xsFUdP',37.773860,-122.422352),
+(40,89.819030,'2023-04-01 10:23:13','QyW8RvzG9fP5nM7tJwZ8o',37.773853,-122.421509),
+(41,55.686391,'2023-04-01 10:23:54','zgyi4FMTgWkxNRm1H67vu',37.774298,-122.421594),
+(42,71.771702,'2023-04-01 10:24:35','Jgj2XnlD6yJgn6ExaL6vt',37.774727,-122.421755),
+(43,63.336077,'2023-04-01 10:25:16','kW8JBVrfR1ZBaSQMB5z5N',37.774186,-122.422864),
+(44,90.062151,'2023-04-01 10:25:57','YrjV6otcRJoxuG7xsFUdP',37.773723,-122.422707),
+(45,71.504169,'2023-04-01 10:26:38','QyW8RvzG9fP5nM7tJwZ8o',37.773716,-122.421864),
+(46,85.955072,'2023-04-01 10:27:19','zgyi4FMTgWkxNRm1H67vu',37.774161,-122.421949),
+(47,63.998963,'2023-04-01 10:28:00','Jgj2XnlD6yJgn6ExaL6vt',37.774590,-122.422110),
+(48,66.657788,'2023-04-01 10:28:41','kW8JBVrfR1ZBaSQMB5z5N',37.774049,-122.423219),
+(49,57.677072,'2023-04-01 10:29:22','YrjV6otcRJoxuG7xsFUdP',37.773586,-122.423062),
+(50,77.804067,'2023-04-01 10:30:03','QyW8RvzG9fP5nM7tJwZ8o',37.773579,-122.422219),
+(51,55.105097,'2023-04-01 10:30:44','zgyi4FMTgWkxNRm1H67vu',37.774024,-122.422304),
+(52,86.912693,'2023-04-01 10:31:25','Jgj2XnlD6yJgn6ExaL6vt',37.774453,-122.422465),
+(53,71.235645,'2023-04-01 10:32:06','kW8JBVrfR1ZBaSQMB5z5N',37.773912,-122.423021),
+(54,76.304244,'2023-04-01 10:32:47','YrjV6otcRJoxuG7xsFUdP',37.773449,-122.422864),
+(55,89.015295,'2023-04-01 10:33:28','QyW8RvzG9fP5nM7tJwZ8o',37.773442,-122.422021),
+(56,71.133232,'2023-04-01 10:34:09','zgyi4FMTgWkxNRm1H67vu',37.773887,-122.422106),
+(57,81.546768,'2023-04-01 10:34:50','Jgj2XnlD6yJgn6ExaL6vt',37.774316,-122.422267),
+(58,60.440565,'2023-04-01 10:35:31','kW8JBVrfR1ZBaSQMB5z5N',37.773775,-122.423376),
+(59,59.717843,'2023-04-01 10:36:12','YrjV6otcRJoxuG7xsFUdP',37.773312,-122.423219),
+(60,92.469005,'2023-04-01 10:36:53','QyW8RvzG9fP5nM7tJwZ8o',37.773305,-122.422376),
+(61,83.410328,'2023-04-01 10:37:34','zgyi4FMTgWkxNRm1H67vu',37.773750,-122.422461),
+(62,68.303475,'2023-04-01 10:38:15','Jgj2XnlD6yJgn6ExaL6vt',37.774179,-122.422622),
+(63,70.508543,'2023-04-01 10:38:56','kW8JBVrfR1ZBaSQMB5z5N',37.773638,-122.423731),
+(64,91.036617,'2023-04-01 10:39:37','YrjV6otcRJoxuG7xsFUdP',37.773175,-122.423574),
+(65,76.150659,'2023-04-01 10:40:18','QyW8RvzG9fP5nM7tJwZ8o',37.773168,-122.422731),
+(66,85.202286,'2023-04-01 10:40:59','zgyi4FMTgWkxNRm1H67vu',37.773613,-122.422816),
+(67,82.019572,'2023-04-01 10:41:40','Jgj2XnlD6yJgn6ExaL6vt',37.774042,-122.422977),
+(68,67.131536,'2023-04-01 10:42:21','kW8JBVrfR1ZBaSQMB5z5N',37.773501,-122.424086),
+(69,83.651141,'2023-04-01 10:43:02','YrjV6otcRJoxuG7xsFUdP',37.773038,-122.423929),
+(70,77.202058,'2023-04-01 10:43:43','QyW8RvzG9fP5nM7tJwZ8o',37.773031,-122.423086),
+(71,56.936097,'2023-04-01 10:44:24','zgyi4FMTgWkxNRm1H67vu',37.773476,-122.423171),
+(72,70.195424,'2023-04-01 10:45:05','Jgj2XnlD6yJgn6ExaL6vt',37.773905,-122.423332),
+(73,61.645470,'2023-04-01 10:45:46','kW8JBVrfR1ZBaSQMB5z5N',37.773364,-122.424441),
+(74,81.193103,'2023-04-01 10:46:27','YrjV6otcRJoxuG7xsFUdP',37.772901,-122.424284),
+(75,73.374085,'2023-04-01 10:47:08','QyW8RvzG9fP5nM7tJwZ8o',37.772894,-122.423441),
+(76,94.234448,'2023-04-01 10:47:49','zgyi4FMTgWkxNRm1H67vu',37.773339,-122.423526),
+(77,70.600459,'2023-04-01 10:48:30','Jgj2XnlD6yJgn6ExaL6vt',37.773768,-122.423687),
+(78,65.456052,'2023-04-01 10:49:11','kW8JBVrfR1ZBaSQMB5z5N',37.773227,-122.424796),
+(79,86.966942,'2023-04-01 10:49:52','YrjV6otcRJoxuG7xsFUdP',37.772764,-122.424639),
+(80,68.544165,'2023-04-01 10:50:33','QyW8RvzG9fP5nM7tJwZ8o',37.772757,-122.423796),
+(81,85.864711,'2023-04-01 10:51:14','zgyi4FMTgWkxNRm1H67vu',37.773202,-122.423881),
+(82,60.771251,'2023-04-01 10:51:55','Jgj2XnlD6yJgn6ExaL6vt',37.773631,-122.424042),
+(83,92.127962,'2023-04-01 10:52:36','kW8JBVrfR1ZBaSQMB5z5N',37.773090,-122.425151),
+(84,74.943304,'2023-04-01 10:53:17','YrjV6otcRJoxuG7xsFUdP',37.772627,-122.424994),
+(85,88.906537,'2023-04-01 10:53:58','QyW8RvzG9fP5nM7tJwZ8o',37.772621,-122.424151),
+(86,61.178331,'2023-04-01 10:54:39','zgyi4FMTgWkxNRm1H67vu',37.773066,-122.424236),
+(87,80.928155,'2023-04-01 10:55:20','Jgj2XnlD6yJgn6ExaL6vt',37.773495,-122.424397),
+(88,56.764750,'2023-04-01 10:56:01','kW8JBVrfR1ZBaSQMB5z5N',37.772954,-122.425506),
+(89,87.073369,'2023-04-01 10:56:42','YrjV6otcRJoxuG7xsFUdP',37.772491,-122.425349),
+(90,71.166767,'2023-04-01 10:57:23','QyW8RvzG9fP5nM7tJwZ8o',37.772485,-122.424506),
+(91,90.008224,'2023-04-01 10:58:04','zgyi4FMTgWkxNRm1H67vu',37.772930,-122.424591)
+=======================================================================
+ id | speed     | timestamp           | userID                | lat       | lng         |
++----+-----------+---------------------+-----------------------+-----------+-------------+
+{id: 1,speed:63.784664,timestamp:'2023-04-01T09:56:35.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775230,lng:-122.419235},
+{id: 6,speed:61.645802,timestamp:'2023-04-01T09:56:59.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775200,lng:-122.419113},
+{id:11,speed:70.162430,timestamp:'2023-04-01T09:57:24.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775070,lng:-122.419464},
+{id:17,speed:82.333221,timestamp:'2023-04-01T10:07:30.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775406,lng:-122.419983},
+{id:22,speed:78.794769,timestamp:'2023-04-01T10:07:55.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775276,lng:-122.420341},
+{id:27,speed:60.034103,timestamp:'2023-04-01T10:08:20.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775139,lng:-122.420692},
+{id:32,speed:73.282829,timestamp:'2023-04-01T10:08:45.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775002,lng:-122.421043},
+{id:37,speed:78.372322,timestamp:'2023-04-01T10:21:10.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.774864,lng:-122.421402},
+{id:42,speed:71.771706,timestamp:'2023-04-01T10:24:35.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.774727,lng:-122.421753},
+{id:47,speed:63.998962,timestamp:'2023-04-01T10:28:00.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.774590,lng:-122.422112},
+{id: 2,speed:87.063843,timestamp:'2023-04-01T09:59:16.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774906,lng:-122.419777},
+{id: 7,speed:75.781357,timestamp:'2023-04-01T10:00:40.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774658,lng:-122.420219},
+{id:12,speed:82.790939,timestamp:'2023-04-01T10:01:05.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774532,lng:-122.420570},
+{id:18,speed:52.918850,timestamp:'2023-04-01T10:01:11.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774864,lng:-122.421097},
+{id:23,speed:62.818687,timestamp:'2023-04-01T10:01:36.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774738,lng:-122.421448},
+{id:28,speed:58.881660,timestamp:'2023-04-01T10:15:01.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774597,lng:-122.421799},
+{id:33,speed:62.758682,timestamp:'2023-04-01T10:18:26.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774460,lng:-122.422157},
+=======================================================================
+
+
+
+        *only id register
+        user(unregistered): ->start( )  
+        user(registered):id ->start(id)
+    *CREATE TABLE users (
+        id INT NOT NULL AUTO_INCREMENT,
+        timestamp DATETIME NOT NULL,
+        userID VARCHAR(255) NOT NULL,
+        PRIMARY KEY (id)
+    );  
+        *feed points by latlng bound:
+        client:mapview:latlngbound->post("feedbybounds",latlngbound):points(bound(latlng))->client
+        
+web:    firstfetch->post(bound),zoom_change->post(bound),move->post(bound)
+        sort(points) by userID, time ascending
+        ->drawonmap(points){
+            1:update(prev_latlng, temp_user, temp_time)
+            2:if user==user, time-temp_time<1 minutes : draw_rec(prev_latlng,latlng,color(speed))
+                update(prev_latlng, temp_user, temp_time)
+            else: update(prev_latlng, temp_user, temp_time)
+            :2
+        }
+        html:if localstorage.userid:start(userid) else start(1)
+        ongpschange: send gps to post("./getgps"){userid, point}
+        fakeongpschange: send clicked point to post("./getgps"){userid, point}
+server: post("/feedbybounds",latlngbound):
+        select * from points where lat<bound.uplat and lat>bound.lowlat and lng<bound.rightlng and lng>bound.leftlng                        ! atlantic lng
+        res.send 202
+    *CREATE TABLE points (
+        id INT NOT NULL AUTO_INCREMENT,
+        speed FLOAT(10,6) NOT NULL,
+        timestamp DATETIME NOT NULL,
+        userID VARCHAR(255) NOT NULL,
+        lat FLOAT(10,6) NOT NULL,
+        lng FLOAT(10,6) NOT NULL,
+        PRIMARY KEY (id)
+    );  
+        post("/start"):
+        if(userid==1){
+            const userid= new nanoid()
+            const time = new Date()
+            database.query(INSERT INTO users 
+                (
+                timestamp, userID,
+                )
+                VALUES
+                (
+                    ?, ?, ?, ?
+                )`)
+            res.send()
+        } else{
+            select * from users where userid = userid
+            if(length==0){
+                res.404
+            } else{
+                (later)log(userid, Date())
+                res.202
+            }
+        }
+        post("/getgps"){
+            select * from users where userid = userid
+            if(length==0){
+                res.404
+            } else{
+                insert to points
+                res.202
+            }
+        }

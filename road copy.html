@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Google Maps App</title>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+	<meta charset="utf-8">
+	<style>
+	#map {
+		height: 100%;
+	}
+	html, body {
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	}
+	</style>
+</head>
+<body>
+	<button id="draw-button">draw</button>
+	<div id="map"></div>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5LQehvGfLC4CHVepASegsxKrDrB1Pugk&libraries=geometry"></script>
+	<script>
+		var locations=
+  [{id: 1,speed:63.784664,timestamp:'2023-04-01T09:56:35.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775230,lng:-122.419235},
+{id: 6,speed:61.645802,timestamp:'2023-04-01T09:56:59.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775200,lng:-122.419113},
+{id:11,speed:70.162430,timestamp:'2023-04-01T09:57:24.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775070,lng:-122.419464},
+{id:17,speed:82.333221,timestamp:'2023-04-01T10:07:30.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775406,lng:-122.419983},
+{id:22,speed:78.794769,timestamp:'2023-04-01T10:07:55.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775276,lng:-122.420341},
+{id:27,speed:60.034103,timestamp:'2023-04-01T10:08:20.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775139,lng:-122.420692},
+{id:32,speed:73.282829,timestamp:'2023-04-01T10:08:45.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775002,lng:-122.421043},
+{id:37,speed:78.372322,timestamp:'2023-04-01T10:21:10.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.774864,lng:-122.421402},
+{id:42,speed:71.771706,timestamp:'2023-04-01T10:24:35.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.774727,lng:-122.421753},
+{id:47,speed:63.998962,timestamp:'2023-04-01T10:28:00.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.774590,lng:-122.422112},
+{id: 2,speed:87.063843,timestamp:'2023-04-01T09:59:16.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774906,lng:-122.419777},
+{id: 7,speed:75.781357,timestamp:'2023-04-01T10:00:40.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774658,lng:-122.420219},
+{id:12,speed:82.790939,timestamp:'2023-04-01T10:01:05.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774532,lng:-122.420570},
+{id:18,speed:52.918850,timestamp:'2023-04-01T10:01:11.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774864,lng:-122.421097},
+{id:23,speed:62.818687,timestamp:'2023-04-01T10:01:36.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774738,lng:-122.421448},
+{id:28,speed:58.881660,timestamp:'2023-04-01T10:15:01.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774597,lng:-122.421799},
+{id:33,speed:62.758682,timestamp:'2023-04-01T10:18:26.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774460,lng:-122.422157}];
+var pointsdata2=[
+    { lat:37.775230,lng:-122.419235 },
+    { lat:37.775200,lng:-122.419113 },
+    { lat:37.775406,lng:-122.419983 },
+    { lat:37.775276,lng:-122.420341 },
+    { lat:37.775139,lng:-122.420692 },
+    { lat:37.775139,lng:-122.420692 }
+  ];
+  var pointsdata3=[
+    { lat: 51.505, lng: -0.09 },
+    { lat: 51.507, lng: -0.08 },
+    { lat: 51.508, lng: -0.06 },
+    { lat: 51.51, lng: -0.047 },
+    { lat: 51.511, lng: -0.055 },
+    { lat: 51.512, lng: -0.07 }
+  ];
+
+		let map;
+		var points;
+		var polygons=[];
+		var time=new Date();
+		var latitude;
+		var longitude;
+		console.log(longitude);
+		var prev_time;
+		var prev_lat;
+		var prev_lng;
+		var storedUserid = localStorage.getItem("userid");
+		if (storedUserid) {
+			console.log(`Welcome back, ${storedUserid}!`);
+		} else {
+			fetch('http://localhost:3000/start')
+				.then(response => response.json())
+				.then(data => {
+				console.log(data);
+				userid=data['userid'];
+				localStorage.setItem("userid", userid);
+				storedUserid=userid;
+				})
+				.catch(error => console.error(error));
+		}
+		const drawButton = document.getElementById("draw-button");
+		drawButton.addEventListener("click", () => {
+          const bounds = map.getBounds();
+          const ne = bounds.getNorthEast();
+          const sw = bounds.getSouthWest();
+          console.log("Map Bounds:", ne.lat(), ne.lng(), sw.lat(), sw.lng());
+		  //fetchPointsByBound({w:sw.lng(),e:ne.lng(),n:ne.lat(),s: sw.lat()})//w,e,n,s
+		  fetchPointsByBound({w:ne.lat(), e:ne.lng(), n:sw.lat(), s:sw.lng()})
+		  
+        });
+		function initMap() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(
+				position => {
+				// The user has granted permission and their location has been retrieved
+				prev_time=time;
+				prev_lat=latitude;
+				prev_lng=longitude;
+				latitude = position.coords.latitude;
+				longitude = position.coords.longitude;
+				time=new Date();
+				//const speed=getSpeed(time,latitude,longitude,prev_time,prev_lat,prev_lng)
+				// Do something with the latitude and longitude, e.g. show on a map
+				//sendGPS(speed,getTime(time),storedUserid,latitude,longitude)
+				},
+				error => {
+				// The user has denied permission or there was an error retrieving the location
+				console.error(error);
+				}
+				);
+			} else {
+				// Geolocation is not supported by the browser
+				console.error("Geolocation is not supported by this browser.");
+			}
+			// Create a new map centered on your location
+			map = new google.maps.Map(document.getElementById("map"), {
+				center: locations[0],
+				zoom: 15
+			});
+			//a(locations);
+
+			// Add a listener for the click event on the map
+			/*
+			map.addListener("click", function(event) {
+				// Get the coordinates of the clicked location
+				let latLng = event.latLng;
+				console.log("latlng clicked"+latlng);
+				
+			});
+			*/
+		}
+		function getSpeed(time, latitude, longitude, prev_time, prev_lat, prev_lng) {
+			// Convert the time strings to Date objects
+			const currTime = time;
+			const prevTime = prev_time;
+			// Calculate the time difference in seconds
+			const timeDiff = (currTime - prevTime) / 1000;
+
+			// Calculate the distance between the two locations using the Haversine formula
+			const R = 6371; // Radius of the earth in km
+			const dLat = deg2rad(latitude - prev_lat);
+			const dLng = deg2rad(longitude - prev_lng);
+			const a =
+			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos(deg2rad(prev_lat)) *
+				Math.cos(deg2rad(latitude)) *
+				Math.sin(dLng / 2) *
+				Math.sin(dLng / 2);
+			const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+			const distance = R * c;
+
+			// Calculate the speed in km/h
+			const speed = distance / timeDiff * 3600;
+
+			// Round the speed to two decimal places and return it
+			return Math.round(speed * 100) / 100;
+      	}
+
+      // Helper function to convert degrees to radians
+      
+		function sendGPS(speed,time,userid,lat,lng){
+			fetch('http://localhost:3000/getGPS', {
+				method: 'POST',
+				body: JSON.stringify({speed,time,userid,lat,lng}),
+				headers: { 'Content-Type': 'application/json' }
+			}).then(response => response.json())
+				.then(data => {//
+					console.log(data);
+					})
+				.catch(error => console.error(error));
+		}
+		function getTime(datetime){
+			const year = datetime.getFullYear();
+			const month = ('0' + (datetime.getMonth() + 1)).slice(-2);
+			const day = ('0' + datetime.getDate()).slice(-2);
+			const hours = ('0' + datetime.getHours()).slice(-2);
+			const minutes = ('0' + datetime.getMinutes()).slice(-2);
+			const seconds = ('0' + datetime.getSeconds()).slice(-2);
+			const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+			return formattedDateTime;
+		}
+		function fetchPointsByBound(bound){
+			fetch('http://localhost:3000/feedbybounds', {
+				method: 'POST',
+				body: JSON.stringify(bound),
+				headers: { 'Content-Type': 'application/json' }
+			}).then(response => response.json())
+				.then(data => {console.log(data);
+				a(data)})
+				.catch(error => console.error(error));
+		}
+	function a(locations){
+		for(var i=0;i<polygons.length-1;i++){
+			polygons[i].setMap(null);
+		}
+		for (var i = 0; i < locations.length; i++) {
+			var marker = new google.maps.Marker({
+			position: locations[i],
+			map: map,
+			});
+		}
+
+		var path = new google.maps.Polyline({
+			path: locations,
+			strokeOpacity: 0
+		});
+		path.setMap(map);
+
+		for (var i = 0; i < locations.length - 1; i++) {
+			var segment = [{lat:locations[i].lat,lng:locations[i].lng}, {lat:locations[i+1].lat,lng:locations[i+1].lng}];
+			var distance = google.maps.geometry.spherical.computeDistanceBetween(
+			new google.maps.LatLng(segment[0]),
+			new google.maps.LatLng(segment[1])
+			);
+			var bearing = google.maps.geometry.spherical.computeHeading(
+			new google.maps.LatLng(segment[0]),
+			new google.maps.LatLng(segment[1])
+			);
+			if((locations[i].userID==locations[i+1].userID)&&(zeroTo59second(locations[i].timestamp,locations[i+1].timestamp))){
+			var result=getRectangle(segment[0], bearing, distance, 20)
+			var circle = new google.maps.Circle({
+				center: {lat:locations[i+1].lat,lng:locations[i+1].lng},
+				radius: 3,
+				strokeColor: '#FF0000',
+				strokeOpacity: 1.0,
+				strokeWeight: 2,
+				fillColor: '#FF0000',
+				fillOpacity: 1
+			});
+
+			circle.setMap(map);
+			polygons.push(circle)
+			}
+		}
+	}
+	function getRectangle(center, bearing, distance, width) {
+		var marker = new google.maps.Marker({
+			position: center,
+			map: map
+		});
+		console.log("haha");
+		var halfWidth = 3;
+		var p1 = google.maps.geometry.spherical.computeOffset(
+			new google.maps.LatLng(center),
+			halfWidth,
+			bearing-90
+		);
+		var p2 = google.maps.geometry.spherical.computeOffset(
+			new google.maps.LatLng(center),
+			halfWidth,
+			bearing +90
+		);
+		var p3 = google.maps.geometry.spherical.computeOffset(
+			new google.maps.LatLng(p2),
+			distance,
+			bearing
+		);
+		var p4 = google.maps.geometry.spherical.computeOffset(
+			new google.maps.LatLng(p1),
+			distance,
+			bearing
+		);
+		var marker = new google.maps.Marker({
+			position: new google.maps.LatLng(p1),
+			map: map
+			});
+		var marker = new google.maps.Marker({
+			position: new google.maps.LatLng(p2),
+			map: map
+			});
+		var marker = new google.maps.Marker({
+			position: new google.maps.LatLng(p3),
+			map: map
+			});
+		var marker = new google.maps.Marker({
+			position: new google.maps.LatLng(p4),
+			map: map
+			});
+			var line = new google.maps.Polyline({
+			path: [p1,p2,p3,p4,p1],
+			geodesic: true,
+			strokeColor: '#FF0000',
+			strokeOpacity: 1.0,
+			strokeWeight: 2
+		});
+		//line.setMap(map);
+		var rectangle = new google.maps.Polygon({
+			paths: [
+			p1,p2,p3,p4
+			],
+			strokeColor: '#FF0000',
+			strokeOpacity: 1.0,
+			strokeWeight: 2,
+			fillColor: '#FF0000',
+			fillOpacity: 1
+		});
+		rectangle.setMap(map);
+		polygons.push(rectangle)
+		var circle = new google.maps.Circle({
+			center: center,
+			radius: halfWidth,
+			strokeColor: '#FF0000',
+			strokeOpacity: 1.0,
+			strokeWeight: 2,
+			fillColor: '#FF0000',
+			fillOpacity: 1
+		});
+
+		circle.setMap(map);
+		polygons.push(circle)
+		var bounds = new google.maps.LatLngBounds();
+		bounds.extend(p1);
+		bounds.extend(p2);
+		bounds.extend(p3);
+		bounds.extend(p4);
+		return bounds;
+	}
+	function zeroTo59second(prev_time,current_time){
+		const time1=new Date(prev_time)
+		const time2=new Date(current_time)
+		const timeDiff = time2-time1
+		const secondsDifxf = Math.floor(timeDiff / 1000);
+		console.log(prev_time)
+		console.log(current_time)
+		return (secondsDiff>0&&secondsDiff<60)
+	}
+	</script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5LQehvGfLC4CHVepASegsxKrDrB1Pugk&callback=initMap"></script>
+	
+    <button id="save-button">Save</button>
+
+    <script>
+      const nameInput = document.getElementById("name-input");
+      const saveButton = document.getElementById("save-button");
+      const greeting = document.getElementById("greeting");
+
+      // Load name from local storage if available
+      const storedName = localStorage.getItem("name");
+      if (storedName) {
+        greeting.textContent = `Welcome back, ${storedName}!`;
+      }
+
+      // Save name to local storage when button is clicked
+      saveButton.addEventListener("click", () => {
+			localStorage.clear();
+			console.log("Local storage cleared.");
+		});
+    </script>
+</body>
+
+  <script>
+    // Your initMap function definition and other JavaScript code...
+
+    
+</script>
+</html>

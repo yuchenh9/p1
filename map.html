@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Route Demo</title>
+
+</head>
+<body onload="initMap()">
+    <div id="map" style="width: 100%; height: 500px;"></div>
+  </body>
+  <button id="draw-button">draw-button</button>
+  <button id="save-button">clear local storage</button>
+  <script>
+    // Your initMap function definition and other JavaScript code...
+
+    const saveButton = document.getElementById("save-button");
+    saveButton.addEventListener("click", () => {
+        localStorage.clear();
+    });
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5LQehvGfLC4CHVepASegsxKrDrB1Pugk&libraries=geometry&map_ids=36df38c1e6536c0f"></script>
+<script>
+  const drawButton = document.getElementById("draw-button");
+  drawButton.addEventListener("click", () => {
+      fetchPointsByBound("");
+    });
+  var endpoint;
+  var polygons=[];
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+    position => {
+    // The user has granted permission and their location has been retrieved
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    // Do something with the latitude and longitude, e.g. show on a map
+  },
+    error => {
+    // The user has denied permission or there was an error retrieving the location
+    console.error(error);
+  }
+  );
+} else {
+  // Geolocation is not supported by the browser
+  console.error("Geolocation is not supported by this browser.");
+}
+var locations=
+  [{id: 1,speed:63.784664,timestamp:'2023-04-01T09:56:35.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775230,lng:-122.419235},
+{id: 6,speed:61.645802,timestamp:'2023-04-01T09:56:59.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775200,lng:-122.419113},
+{id:11,speed:70.162430,timestamp:'2023-04-01T09:57:24.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775070,lng:-122.419464},
+{id:17,speed:82.333221,timestamp:'2023-04-01T10:07:30.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775406,lng:-122.419983},
+{id:22,speed:78.794769,timestamp:'2023-04-01T10:07:55.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775276,lng:-122.420341},
+{id:27,speed:60.034103,timestamp:'2023-04-01T10:08:20.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775139,lng:-122.420692},
+{id:32,speed:73.282829,timestamp:'2023-04-01T10:08:45.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.775002,lng:-122.421043},
+{id:37,speed:78.372322,timestamp:'2023-04-01T10:21:10.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.774864,lng:-122.421402},
+{id:42,speed:71.771706,timestamp:'2023-04-01T10:24:35.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.774727,lng:-122.421753},
+{id:47,speed:63.998962,timestamp:'2023-04-01T10:28:00.000z',userID:'Jgj2XnlD6yJgn6ExaL6vt',lat:37.774590,lng:-122.422112},
+{id: 2,speed:87.063843,timestamp:'2023-04-01T09:59:16.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774906,lng:-122.419777},
+{id: 7,speed:75.781357,timestamp:'2023-04-01T10:00:40.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774658,lng:-122.420219},
+{id:12,speed:82.790939,timestamp:'2023-04-01T10:01:05.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774532,lng:-122.420570},
+{id:18,speed:52.918850,timestamp:'2023-04-01T10:01:11.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774864,lng:-122.421097},
+{id:23,speed:62.818687,timestamp:'2023-04-01T10:01:36.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774738,lng:-122.421448},
+{id:28,speed:58.881660,timestamp:'2023-04-01T10:15:01.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774597,lng:-122.421799},
+{id:33,speed:62.758682,timestamp:'2023-04-01T10:18:26.000Z',userID:'kW8JBVrfR1ZBaSQMB5z5N',lat:37.774460,lng:-122.422157}];
+var locations2 = [
+  { lat: 51.505, lng: -0.09 },
+  { lat: 51.507, lng: -0.08 },
+  { lat: 51.508, lng: -0.06 },
+  { lat: 51.51, lng: -0.047 },
+  { lat: 51.511, lng: -0.055 },
+  { lat: 51.512, lng: -0.07 }
+];
+var locations3=[
+  { lat:37.775230,lng:-122.419235 },
+  { lat:37.775200,lng:-122.419113 },
+  { lat:37.775070,lng:-122.419464 },
+  { lat:37.775276,lng:-122.419983 },
+  { lat:37.775139,lng:-122.420692 },
+  { lat:37.775002,lng:-122.421043 }
+];
+var speeds = [20, 30, 15];
+
+var colors = {
+  low: '#00ff00',
+  moderate: '#ffff00',
+  high: '#ff0000'
+};
+
+function getColor(speed) {
+  if (speed <= 10) {
+    return colors.low;
+  } else if (speed <= 20) {
+    return colors.moderate;
+  } else {
+    return colors.high;
+  }
+}
+function fetchPointsByBound(bound){
+			fetch('http://localhost:3000/feedbybounds', {
+				method: 'POST',
+				body: JSON.stringify({w:0,e:0,n:0,s:0}),
+				headers: { 'Content-Type': 'application/json' }
+			}).then(response => response.json())
+				.then(data => {console.log(data);
+				a(data)})
+				.catch(error => console.error(error));
+		}
+var map;
+
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: locations[0],
+    zoom: 20,
+    mapId: "15431d2b469f209e",
+    // disable interactions due to animation loop and moveCamera
+    disableDefaultUI: true,
+  });
+  map.setTilt(0);
+  //google.maps.event.addListener(map, 'zoom_changed', function() {
+// Get the current zoom level of the map
+//var zoomLevel = map.getZoom();
+  // });
+  
+  
+  
+  //a(locations);
+ /*
+    */
+  
+  
+}
+function zeroTo59second(prev_time,current_time){
+  const time1=new Date(prev_time)
+  const time2=new Date(current_time)
+  const timeDiff = time2-time1
+  const secondsDiff = Math.floor(timeDiff / 1000);
+  console.log(prev_time)
+  console.log(current_time)
+  return (secondsDiff>0&&secondsDiff<60)
+}
+function a(locations){
+  for(var i=0;i<polygons.length-1;i++){
+    polygons[i].setMap(null);
+  }
+  /*
+  for (var i = 0; i < locations.length; i++) {
+    var marker = new google.maps.Marker({
+      position: locations[i],
+      map: map,
+    });
+  }
+*/
+  var path = new google.maps.Polyline({
+    path: locations,
+    strokeOpacity: 0
+  });
+  path.setMap(map);
+
+  for (var i = 0; i < locations.length - 1; i++) {
+    var segment = [{lat:locations[i].lat,lng:locations[i].lng}, {lat:locations[i+1].lat,lng:locations[i+1].lng}];
+    var distance = google.maps.geometry.spherical.computeDistanceBetween(
+      new google.maps.LatLng(segment[0]),
+      new google.maps.LatLng(segment[1])
+    );
+    var bearing = google.maps.geometry.spherical.computeHeading(
+      new google.maps.LatLng(segment[0]),
+      new google.maps.LatLng(segment[1])
+    );
+    if((locations[i].userID==locations[i+1].userID)){//&&(zeroTo59second(locations[i].timestamp,locations[i+1].timestamp))
+      var result=getRectangle(segment[0], bearing, distance, 20)
+      var circle = new google.maps.Circle({
+        center: {lat:locations[i+1].lat,lng:locations[i+1].lng},
+        radius: 3,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        fillColor: '#FF0000',
+        fillOpacity: 1
+      });
+
+      circle.setMap(map);
+      polygons.push(circle)
+    }
+  }
+}
+const storedEndpoint = localStorage.getItem("endpoint");
+  if (storedEndpoint) {
+    endpoint=storedEndpoint;
+    console.log(`Welcome back, ${storedEndpoint}!`);
+    fetch(`http://localhost:3000/start`, {
+      method: 'POST',
+      body: JSON.stringify({storedEndpoint}),
+      headers: { 'Content-Type': 'application/json' }
+    })
+  } else {
+    fetch('http://localhost:3000/start')
+      .then(response => response.json())
+      .then(data => {console.log(data);
+        endpoint=data['endpoint'];
+        localStorage.setItem("endpoint", endpoint);
+      })
+      .catch(error => console.error(error));
+  }
+function getRectangle(center, bearing, distance, width) {
+  /*
+  var marker = new google.maps.Marker({
+    position: center,
+    map: map
+  });*/
+  console.log("haha");
+  var halfWidth = 3;
+  var p1 = google.maps.geometry.spherical.computeOffset(
+    new google.maps.LatLng(center),
+    halfWidth,
+    bearing-90
+  );
+  var p2 = google.maps.geometry.spherical.computeOffset(
+    new google.maps.LatLng(center),
+    halfWidth,
+    bearing +90
+  );
+  var p3 = google.maps.geometry.spherical.computeOffset(
+    new google.maps.LatLng(p2),
+    distance,
+    bearing
+  );
+  var p4 = google.maps.geometry.spherical.computeOffset(
+    new google.maps.LatLng(p1),
+    distance,
+    bearing
+  );
+  /*
+  var marker = new google.maps.Marker({
+      position: new google.maps.LatLng(p1),
+      map: map
+    });
+  var marker = new google.maps.Marker({
+      position: new google.maps.LatLng(p2),
+      map: map
+    });
+  var marker = new google.maps.Marker({
+      position: new google.maps.LatLng(p3),
+      map: map
+    });
+  var marker = new google.maps.Marker({
+      position: new google.maps.LatLng(p4),
+      map: map
+    });*/
+    var line = new google.maps.Polyline({
+    path: [p1,p2,p3,p4,p1],
+    geodesic: true,
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2
+  });
+  //line.setMap(map);
+  var rectangle = new google.maps.Polygon({
+    paths: [
+      p1,p2,p3,p4
+    ],
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2,
+    fillColor: '#FF0000',
+    fillOpacity: 1
+  });
+  rectangle.setMap(map);
+  polygons.push(rectangle)
+  var circle = new google.maps.Circle({
+    center: center,
+    radius: halfWidth,
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2,
+    fillColor: '#FF0000',
+    fillOpacity: 1
+  });
+
+  circle.setMap(map);
+  polygons.push(circle)
+  var bounds = new google.maps.LatLngBounds();
+  bounds.extend(p1);
+  bounds.extend(p2);
+  bounds.extend(p3);
+  bounds.extend(p4);
+  return bounds;
+}
+///
+
+///
+if (navigator.geolocation) {
+  const options = {
+  enableHighAccuracy: true,
+  timeout: 10000,
+  maximumAge: 0
+};
+
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      // The user has granted permission and their location has been retrieved
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      // Send the location data to the server
+      sendLocationToServer(getTime(),latitude, longitude);
+
+      // Set up a watcher to send the location data to the server when the user's position changes
+      const watcherId = navigator.geolocation.watchPosition(
+        position => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          // Send the location data to the server
+          
+          
+          sendLocationToServer(getTime(),latitude, longitude);
+        },
+        error => {
+          console.error(error);
+        },
+        options
+      );
+    },
+    error => {
+      // The user has denied permission or there was an error retrieving the location
+      console.error(error);
+    },
+    options
+  );
+} else {
+  // Geolocation is not supported by the browser
+  console.error("Geolocation is not supported by this browser.");
+}
+
+
+function sendLocationToServer(time,latitude, longitude) {
+// Send the location data to the server using fetch() or other AJAX method
+fetch(`http://localhost:3000/${endpoint}`, {
+  method: 'POST',
+  body: JSON.stringify({time, latitude, longitude }),
+  headers: { 'Content-Type': 'application/json' }
+})
+
+.then(response => {console.log('Location sent to server');
+response.json();})
+.then(data=>{
+  var locationdata=data['locationdata'];
+  var locations=[];
+  for (var i = 0; i < locationdata.length; i++) {
+    const {timestamp, endpoint, lat, lng} = locationdata[i]
+    locations.push({lat,lng});
+    var marker = new google.maps.Marker({
+      position: {lat,lng},
+      map: map,
+    });
+  }
+    
+    var path = new google.maps.Polyline({
+      path: locations,
+      strokeOpacity: 0
+    });
+    
+    path.setMap(map);
+  // Converts from degrees to radians.
+  function toRadians(degrees) {
+    return degrees * Math.PI / 180;
+  };
+  
+  // Converts from radians to degrees.
+  function toDegrees(radians) {
+    return radians * 180 / Math.PI;
+  }
+
+
+  function bearing(startLat, startLng, destLat, destLng){
+    startLat = toRadians(startLat);
+    startLng = toRadians(startLng);
+    destLat = toRadians(destLat);
+    destLng = toRadians(destLng);
+
+    y = Math.sin(destLng - startLng) * Math.cos(destLat);
+    x = Math.cos(startLat) * Math.sin(destLat) -
+          Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
+    brng = Math.atan2(y, x);
+    brng = toDegrees(brng);
+    return (brng + 360) % 360;
+  }
+    for (var i = 0; i < locations.length - 1; i++) {
+      var speed = speeds[i];
+      var color = getColor(speed);
+      var segment = [locations[i], locations[i + 1]];
+      var distance = google.maps.geometry.spherical.computeDistanceBetween(
+        new google.maps.LatLng(segment[0]),
+        new google.maps.LatLng(segment[1])
+      );
+      var bearing = bearing(segment[0].lat,segment[0].lng,segment[1].lat,segment[1].lng)
+      /*
+      var bearing = google.maps.geometry.spherical.computeHeading(
+        new google.maps.LatLng(segment[0]),
+        new google.maps.LatLng(segment[1])
+      );*/
+      console.log(bearing);
+      /*
+      var rectangle = new google.maps.Rectangle({
+        strokeWeight: 0,
+        fillColor: color,
+        fillOpacity: 1,
+        map: map,
+        bounds: getRectangle(segment[0], bearing, distance, 20)
+      });
+      */
+      var bounds=getRectangle(segment[0], bearing, distance, 20)
+
+    }})
+.catch(error => console.error(error));
+}
+
+function getTime(){
+const datetime=new Date();
+const year = datetime.getFullYear();
+const month = ('0' + (datetime.getMonth() + 1)).slice(-2);
+const day = ('0' + datetime.getDate()).slice(-2);
+const hours = ('0' + datetime.getHours()).slice(-2);
+const minutes = ('0' + datetime.getMinutes()).slice(-2);
+const seconds = ('0' + datetime.getSeconds()).slice(-2);
+const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+return formattedDateTime;
+}
+function fetchData() {
+const apiUrl = `http://localhost:3000/${endpoint}`;
+const params = {
+  table: 'locations',
+  endpoint: endpoint
+};
+  fetch(apiUrl, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(params)
+})
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+}
+
+// Call the fetchData() function every 5 seconds
+setInterval(fetchData, 5000);
+</script>
+  </html>

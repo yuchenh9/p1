@@ -20,18 +20,16 @@ gltfLoader.setDRACOLoader(dracoLoader)
 let mixer = null
 var eggplant = new THREE.Mesh()
 
+// Scene
+const scene = new THREE.Scene()
 gltfLoader.load(
-    '/models/eggplant.glb',
+    '/models/box.glb',
     (gltf) =>
     {
         gltf.scene.scale.set(0.025, 0.025, 0.025)
         console.log("add")
-        eggplant=new THREE.Mesh(gltf.scene.children[0].children[0].children[0].children[0].children[0].geometry,new THREE.MeshStandardMaterial({
-            color: 0x00ff00,
-            wireframe: true
-        }))
-        //scene.add(eggplant)
-        console.log(eggplant)
+        console.log(gltf.scene.children[0])
+        scene.add(gltf.scene.children[0])
         // Animation
     }
 )
@@ -297,8 +295,6 @@ gui.add(debugObject, 'reset')
 // Canvas
 const canvas = document.querySelector('canvas.webga')
 
-// Scene
-const scene = new THREE.Scene()
 
 /**
  * Sounds

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Local Storage Example</title>
+  </head>
+  <body>
+    <h1>Local Storage Example</h1>
+    <p>Enter your name:</p>
+    <input type="text" id="name-input">
+    <button id="save-button">Save</button>
+    <p id="greeting"></p>
+
+    <script>
+      const nameInput = document.getElementById("name-input");
+      const saveButton = document.getElementById("save-button");
+      const greeting = document.getElementById("greeting");
+
+      // Load name from local storage if available
+      const storedName = localStorage.getItem("name");
+      if (storedName) {
+        greeting.textContent = `Welcome back, ${storedName}!`;
+      }
+
+      // Save name to local storage when button is clicked
+      saveButton.addEventListener("click", () => {
+        const name = nameInput.value;
+        localStorage.setItem("name", name);
+        greeting.textContent = `Hello, ${name}!`;
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Map Bounds Example</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5LQehvGfLC4CHVepASegsxKrDrB1Pugk"></script>
+    <script>
+      let map;
+      
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 37.7749, lng: -122.4194 },
+          zoom: 12,
+        });
+        
+        const button = document.getElementById("bounds-button");
+        button.addEventListener("click", () => {
+          const bounds = map.getBounds();
+          const ne = bounds.getNorthEast();
+          const sw = bounds.getSouthWest();
+          console.log("Map Bounds:", ne.lat(), ne.lng(), sw.lat(), sw.lng());
+        });
+      }
+    </script>
+    <style>
+      #map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body onload="initMap()">
+    <div id="map"></div>
+    <button id="bounds-button">Get Map Bounds</button>
+  </body>
+</html>
