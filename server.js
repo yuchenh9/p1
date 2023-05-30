@@ -2,6 +2,8 @@ var express = require("express");
 // const bodyParser = require("body-parser"); /* deprecated */
 var cors = require("cors");
 var path = require('path');
+var testSubject=1
+//unity=1,data browser=2
 const port = 8080;
 var app = express();
 var corsOptions = {
@@ -23,8 +25,11 @@ var connection = mysql.createPool({
 console.log(connection);
 // simple route
 //app.use(express.static('public')); /* this line tells Express to use the public folder as our static folder from which we can serve static files*/
-app.use(express.static(path.join(__dirname, './app2/build')));
-app.use(express.static(path.join(__dirname, './public')));
+if(testSubject==2){ 
+    app.use(express.static(path.join(__dirname, './app2/build')));//this makes it a data browser, if not comment this line, the next line would not have any effect
+} else if (testSubject==1){ 
+    app.use(express.static(path.join(__dirname, './public')));//this makes it a unity component
+}
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

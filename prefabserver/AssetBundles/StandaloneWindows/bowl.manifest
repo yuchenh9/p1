@@ -1,0 +1,48 @@
+ManifestFileVersion: 0
+CRC: 3422614231
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: ae9a61ba66266114d43232f4d753404c
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 21ea51a48315def5b3c41433f1347cb9
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 54
+  Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 74d075e443ddc624db302098f7826153, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 135
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Resources/potato.prefab
+- Assets/Resources/steak.prefab
+- Assets/Resources/cabbage.prefab
+- Assets/Resources/bell_pepper.prefab
+- Assets/Resources/chicken_breast.prefab
+- Assets/Resources/carrot.prefab
+- Assets/Resources/tomato.prefab
+- Assets/Resources/bowl.prefab
+Dependencies: []
