@@ -22,10 +22,21 @@
         <div id="unity-fullscreen-button"></div>
         <div id="unity-build-title">My project</div>
       </div>
+      <button id="slice" >Slice</button>
+      <button id="left">left</button>
+      <button id="right">right</button>
+      
+      <select id="select">
+        <option value="carrot">carrot</option>
+        <option value="steak">steak</option>
+        <option value="potato">potato</option>
+        <option value="tomato">tomato</option>
+      </select>
+      <select id="put">
+      </select>
+      
     </div>
     
-    <button onclick="handleClick1()"><Left></button>
-      <button onclick="handleClick2()"><right></button>
     <script>
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
@@ -57,7 +68,8 @@
         }
         updateBannerVisibility();
       }
-
+      var index=0;
+      var mylist=[];
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/public.loader.js";
       var config = {
@@ -118,19 +130,70 @@
         });
       };
       document.body.appendChild(script);
-
-  
-    function handleClick1() {
-      if (unityInstance) {
-      unityInstance.SendMessage("controller", "ReactScroll(0)", parameter);
+      document.getElementById("slice").onclick = function() {
+        unityInstance.SendMessage("controller", "ReactSlice", 3);
       }
-    }
-    function handleClick2() {
-      if (unityInstance) {
-      unityInstance.SendMessage("controller", "ReactScroll(1)", parameter);
+      document.getElementById("left").onclick = function() {
+        index=index-1;
+        if(index>(mylist.length-1)){
+          index=mylist.length-1;
+          return;
+        }
+        if(index<0){
+          index=0;
+          return;
+        }
+        unityInstance.SendMessage("controller", "ReactScroll", -1);
       }
-    }
+      document.getElementById("right").onclick = function() {
+        index=index+1;
+        if(index>(mylist.length-1)){
+          index=mylist.length-1;
+          return;
+        }
+        if(index<0){
+          index=0;
+          return;
+        }
+        unityInstance.SendMessage("controller", "ReactScroll", 1);
+      }
 
+
+      //select food and addPrefab in unity
+      var e = document.getElementById("select");
+
+      e.addEventListener("change", function() {
+        var value = this.value;
+        console.log("add "+value);
+        unityInstance.SendMessage("controller", "ReactAddPrefab", value);
+        mylist.push(value);
+
+        //update the put indexes, because this function changes the lists
+        var put = document.getElementById("put");
+
+        // Remove all previous options
+        put.innerHTML = "";
+
+        for (var i = 0; i < mylist.length; i++) {
+          var option = document.createElement("option");
+          option.value = i;
+          option.text = i;
+          put.appendChild(option);
+        }
+      });
+//
+
+//put food to another bowl, call ReactPut in unity
+      var e = document.getElementById("put");
+      e.addEventListener("change", function() {
+        var value = this.value;
+        console.log("put "+value);
+
+        unityInstance.SendMessage("controller", "ReactPut", value);
+      });
+
+
+      
     </script>
   </body>
 </html>
