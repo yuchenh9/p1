@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 202639665
+CRC: 1529009256
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 9abfd37f6564ee3d86f845e7407dd59f
+    Hash: 8ff6d3faf64e9a2de21af07649c03344
   TypeTreeHash:
     serializedVersion: 2
     Hash: 21ea51a48315def5b3c41433f1347cb9
@@ -39,6 +39,8 @@ SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Resources/potato.prefab
 - Assets/Resources/steak.prefab
+- Assets/Resources/cabbage.prefab
+- Assets/Resources/bell_pepper.prefab
 - Assets/Resources/chicken_breast.prefab
 - Assets/Resources/carrot.prefab
 - Assets/Resources/tomato.prefab

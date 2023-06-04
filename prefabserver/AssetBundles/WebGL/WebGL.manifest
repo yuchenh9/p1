@@ -1,7 +1,7 @@
 ManifestFileVersion: 0
-CRC: 2828661511
+CRC: 999563598
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: bowl
+      Name: thebundle
       Dependencies: {}
